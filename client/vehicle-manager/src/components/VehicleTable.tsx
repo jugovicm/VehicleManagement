@@ -3,7 +3,7 @@ import { Vehicle } from '../types';
 
 interface VehicleTableProps {
   vehicles: Vehicle[];
-  onDelete: (id: number) => void;  // Delete object (id)
+  onDelete: (id: number) => void;
 }
 
 const VehicleTable: React.FC<VehicleTableProps> = ({ vehicles, onDelete }) => {
