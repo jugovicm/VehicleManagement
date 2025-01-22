@@ -15,6 +15,11 @@ public class VehicleService {
     }
 
     public Vehicle createVehicle(Vehicle vehicle){
+        // check if id is null, if it is different from null, set it to NULL
+        if (vehicle.getId() != null) {
+            vehicle.setId(null);
+        }
+
         return vehicleRepository.save(vehicle);
     }
 
@@ -26,3 +31,4 @@ public class VehicleService {
         vehicleRepository.deleteById(id);
     }
 }
+
