@@ -5,7 +5,7 @@ This project is a simple vehicle management system that allows users to create, 
 
 ## Technologies Used
 
-- **Frontend:** React, Vite, Axios, TypeScript
+- **Frontend:** React, JavaScript, HTML, CSS, Vite, Axios, TypeScript, Material UI
 - **Backend:** Spring Boot, Java
 - **Database:** In-memory H2 Database
 
