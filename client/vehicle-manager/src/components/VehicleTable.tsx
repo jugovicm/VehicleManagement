@@ -11,6 +11,7 @@ const VehicleTable: React.FC<VehicleTableProps> = ({ vehicles, onDelete }) => {
     <table>
       <thead>
         <tr>
+          <th>Id</th>
           <th>Model</th>
           <th>First Registration Year</th>
           <th>Cubic Capacity</th>
@@ -22,13 +23,14 @@ const VehicleTable: React.FC<VehicleTableProps> = ({ vehicles, onDelete }) => {
       <tbody>
         {vehicles.map((vehicle) => (
           <tr key={vehicle.id}>
+            <td>{vehicle.id}</td>
             <td>{vehicle.model}</td>
             <td>{vehicle.firstRegistrationYear}</td>
             <td>{vehicle.cubicCapacity}</td>
             <td>{vehicle.fuel}</td>
             <td>{vehicle.mileage}</td>
             <td>
-              <button onClick={() => onDelete(vehicle.id)}>Delete</button>
+              <button className="delete-button" onClick={() => onDelete(vehicle.id)}>Delete</button>
             </td>
           </tr>
         ))}

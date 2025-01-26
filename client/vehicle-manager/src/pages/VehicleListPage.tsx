@@ -34,11 +34,16 @@ const VehicleListPage: React.FC = () => {
 
   return (
     <div className="vehicle-list-page">
-      {/* Heading and button "+NEW" */}
+      {/* Header */}
       <div className="page-header">
+        <p>Header</p>
+      </div>
+      
+      {/* Title and button */}
+      <div className = "title">
         <h2>Vehicle Data</h2>
         <Link to="/add-vehicle">
-          <button className="btn-new-vehicle">+ New</button>
+          <button className="back-button">+ New</button>
         </Link>
       </div>
 
@@ -58,7 +63,7 @@ const VehicleListPage: React.FC = () => {
 
       {/* Footer */}
       <footer className="page-footer">
-        <p>© 2025 Vehicle Management</p>
+        <p>Footer</p>
       </footer>
     </div>
   );

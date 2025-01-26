@@ -1,47 +1,55 @@
 import React, { useState } from 'react';
 import { Vehicle } from '../types';
 import { addVehicle } from '../services/vehicleService';
+import { useNavigate } from 'react-router-dom'; 
 
 const AddVehiclePage: React.FC<{ onAddVehicle: (vehicle: Vehicle) => void }> = ({ onAddVehicle }) => {
   const [model, setModel] = useState('');
   const [firstRegistrationYear, setFirstRegistrationYear] = useState('');
-  const [cubicCapacity, setCubicCapacity] = useState(0);
-  const [fuel, setFuel] = useState<'DIESEL' | 'PETROL' | 'HYBRID'>('DIESEL');
-  const [mileage, setMileage] = useState(0);
+  const [cubicCapacity, setCubicCapacity] = useState('');
+  const [fuel, setFuel] = useState<'' | 'DIESEL' | 'PETROL' | 'HYBRID'>('');
+  const [mileage, setMileage] = useState('');
   const [errors, setErrors] = useState({
     model: '',
     firstRegistrationYear: '',
     cubicCapacity: '',
-    mileage: ''
+    mileage: '',
+    fuel: ''
   });
   const [error, setError] = useState('');
+  const navigate = useNavigate(); 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     let valid = true;
-    const newErrors = { model: '', firstRegistrationYear: '', cubicCapacity: '', mileage: '' };
+    const newErrors = { model: '', firstRegistrationYear: '', cubicCapacity: '', mileage: '', fuel: '' };
 
     if (!model) {
-        newErrors.model = 'Model is required';
-        valid = false;
-      } else if (model.length > 40) {
-        newErrors.model = 'Model cannot exceed 40 characters';
-        valid = false;
-      }
-
-    if (Number(firstRegistrationYear) < 1000 || Number(firstRegistrationYear) > 9999) { //better solution is firstRegistrationYear.length != 4, but I think we can set smaller radius (ex. 1970 - 2040)
-      newErrors.firstRegistrationYear = 'First Registration Year must be number between 1000 and 9999';
+      newErrors.model = 'Model is required';
+      valid = false;
+    } else if (model.length > 40) {
+      newErrors.model = 'Model cannot exceed 40 characters';
       valid = false;
     }
 
-    if (cubicCapacity < 1000 || cubicCapacity > 9999) {
-      newErrors.cubicCapacity = 'Cubic Capacity must be number between 1000 and 9999';
+    if (firstRegistrationYear.length !== 4 || isNaN(Number(firstRegistrationYear))) {
+      newErrors.firstRegistrationYear = 'First Registration Year must be a 4-digit number';
       valid = false;
     }
 
-    if (mileage > 9999999) {
-      newErrors.mileage = 'Mileage cannot exceed 9999999';
+    if (cubicCapacity.length !== 4 || isNaN(Number(cubicCapacity))) {
+      newErrors.cubicCapacity = 'Cubic Capacity must be a number and up to 4 digits';
+      valid = false;
+    }
+
+    if (mileage.length > 7 || isNaN(Number(mileage))) {
+      newErrors.mileage = 'Mileage must be a number and up to 7 digits';
+      valid = false;
+    }
+
+    if (!fuel) {
+      newErrors.fuel = 'Fuel type is required';
       valid = false;
     }
 
@@ -51,12 +59,12 @@ const AddVehiclePage: React.FC<{ onAddVehicle: (vehicle: Vehicle) => void }> = (
     }
 
     const vehicle: Vehicle = {
-      id: 0, // backend will generate id
+      id: 0, //backend ID generation
       model,
       firstRegistrationYear,
-      cubicCapacity,
+      cubicCapacity: Number(cubicCapacity),
       fuel,
-      mileage,
+      mileage: Number(mileage),
     };
 
     try {
@@ -64,10 +72,11 @@ const AddVehiclePage: React.FC<{ onAddVehicle: (vehicle: Vehicle) => void }> = (
       onAddVehicle(newVehicle);
       setModel('');
       setFirstRegistrationYear('');
-      setCubicCapacity(0);
+      setCubicCapacity('');
       setFuel('DIESEL');
-      setMileage(0);
-      setErrors({ model: '', firstRegistrationYear: '', cubicCapacity: '', mileage: '' });
+      setMileage('');
+      setErrors({ model: '', firstRegistrationYear: '', cubicCapacity: '', mileage: '', fuel: '' });
+      navigate(-1);
     } catch (err) {
       setError('Error adding vehicle. Please try again.');
     }
@@ -75,72 +84,96 @@ const AddVehiclePage: React.FC<{ onAddVehicle: (vehicle: Vehicle) => void }> = (
 
   return (
     <div className="container">
-      <h2>Add New Vehicle</h2>
+      {/* Header */}
+      <div className="page-header">
+        <p>Header</p>
+      </div>
+
+      {/* Title and button */}
+      <div className="title">
+        <h2>New Vehicle</h2>
+        <button className="submit-button" type="submit" onClick={handleSubmit}>Save</button>
+      </div>
+
+      {/* Error Messages */}
       {error && <div className="error-message">{error}</div>} {/* Global error */}
+      
       <form onSubmit={handleSubmit} className="vehicle-form">
+        {/* Model */}
         <div className="form-group">
-          <label>Model</label>
           <input
             type="text"
             value={model}
             onChange={(e) => setModel(e.target.value)}
-            //maxLength={40}
+            placeholder="Model"
             required
           />
           {errors.model && <div className="error">{errors.model}</div>} {/* Model error */}
         </div>
-
+        {/* First Registration Year */}
         <div className="form-group">
-          <label>First Registration Year</label>
           <input
-            type="number"
+            type="text"
             value={firstRegistrationYear}
-            onChange={(e) => setFirstRegistrationYear(e.target.value)}
-            //min={1000}
-            //max={9999}
+            onChange={(e) => setFirstRegistrationYear(e.target.value.replace(/\D/g, ''))} // Prevent non-numeric characters
+            placeholder="First Registration Year"
+            maxLength={4}
             required
           />
           {errors.firstRegistrationYear && <div className="error">{errors.firstRegistrationYear}</div>} 
         </div>
 
+        {/* Cubic Capacity */}
         <div className="form-group">
-          <label>Cubic Capacity</label>
           <input
-            type="number"
+            type="text"
             value={cubicCapacity}
-            onChange={(e) => setCubicCapacity(Number(e.target.value))}
-            //min={1}
-            //max={9999}
+            onChange={(e) => setCubicCapacity(e.target.value.replace(/\D/g, ''))} // Prevent non-numeric characters
+            placeholder="Cubic Capacity"
+            maxLength={4}
             required
           />
           {errors.cubicCapacity && <div className="error">{errors.cubicCapacity}</div>}
         </div>
 
+        {/* Fuel */}
         <div className="form-group">
-          <label>Fuel Type</label>
-          <select value={fuel} onChange={(e) => setFuel(e.target.value as 'DIESEL' | 'PETROL' | 'HYBRID')} required>
-            <option value="DIESEL">DIESEL</option>
-            <option value="PETROL">PETROL</option>
-            <option value="HYBRID">HYBRID</option>
-          </select>
+          {/* Using input with list attribute for fuel type */}
+          <input
+            type="text"
+            value={fuel}
+            onChange={(e) => setFuel(e.target.value as '' | 'DIESEL' | 'PETROL' | 'HYBRID')}
+            list="fuel-options"
+            placeholder="Fuel"
+            required
+          />
+          <datalist id="fuel-options">
+            <option value="" disabled>Select Fuel Type</option> {/* Prazna opcija koja se ne može selektovati */}
+            <option value="DIESEL" />
+            <option value="PETROL" />
+            <option value="HYBRID" />
+          </datalist>
+          {errors.fuel && <div className="error">{errors.fuel}</div>} {/* Fuel type error */}
         </div>
 
+        {/* Mileage */}
         <div className="form-group">
-          <label>Mileage</label>
           <input
-            type="number"
+            type="text"
             value={mileage}
-            onChange={(e) => setMileage(Number(e.target.value))}
-            //max={9999999}
+            onChange={(e) => setMileage(e.target.value.replace(/\D/g, ''))} // Prevent non-numeric characters
+            placeholder="Mileage"
+            maxLength={7}
             required
           />
           {errors.mileage && <div className="error">{errors.mileage}</div>} 
         </div>
-
-        <button type="submit" className="btn-submit">Add Vehicle</button>
       </form>
 
-      <button className="btn-back" onClick={() => window.history.back()}>Back to Vehicle List</button>
+      {/* Footer */}
+      <footer className="page-footer">
+        <p>Footer</p>
+      </footer>
     </div>
   );
 };

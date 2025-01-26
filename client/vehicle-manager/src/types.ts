@@ -3,7 +3,7 @@ export type Vehicle = {
     model: string; 
     firstRegistrationYear: string;  // Max length 4
     cubicCapacity: number;  // Max length 4
-    fuel: 'DIESEL' | 'PETROL' | 'HYBRID';  // (enum)
+    fuel: '' | 'DIESEL' | 'PETROL' | 'HYBRID';  // (enum)
     mileage: number;  // Max length 7
   };
   
