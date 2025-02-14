@@ -1,6 +1,7 @@
 package com.jugovicm.vehicleManagement.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 
 @Entity
 public class Vehicle {
@@ -9,11 +10,24 @@ public class Vehicle {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @NotBlank(message = "Model cannot be empty")
     private String model;
-    private String firstRegistrationYear; // format:YYYY
+
+    @Pattern(regexp = "\\d{4}", message = "First registration year must be in the format YYYY")
+    private String firstRegistrationYear;
+
+    @NotNull(message = "Cubic capacity is required")
+    @Min(value = 1, message = "Cubic capacity must be greater than 0")
+    @Max(value = 9999, message = "Cubic capacity cannot exceed 9999")
     private Integer cubicCapacity;
+
+    @NotNull(message = "Fuel type is required")
     @Enumerated(EnumType.STRING)
     private Fuel fuel;
+
+    @NotNull(message = "Mileage is required")
+    @Min(value = 0, message = "Mileage cannot be negative")
+    @Max(value = 9999999, message = "Mileage cannot exceed 7 digits")
     private Integer mileage;
 
     public Vehicle() {
